@@ -12,9 +12,11 @@ Banco de dados utilizado: Postgres.
 - Na pasta backend se encontra um arquivo .env.example que pode servir como base para o .ENV, bastando apenas preencher as variáveis de acordo com o ambiente utilizado.
 
 ### Para rodar os serviços
-
+```
 yarn dev
+
 yarn queue
+```
 
 ## Mobile
 

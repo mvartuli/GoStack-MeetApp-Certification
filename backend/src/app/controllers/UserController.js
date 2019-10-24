@@ -38,18 +38,33 @@ class UserController {
 
   async update(req, res) {
     const schema = Yup.object().shape({
-      name: Yup.string(),
-      email: Yup.string().email(),
-      oldPassword: Yup.string().min(6),
+      name: Yup.string().required('É necessário informar o nome'),
+      email: Yup.string()
+        .email('informe um e-mail válido')
+        .required('É necessário informar o e-mail'),
+      oldPassword: Yup.string(),
       password: Yup.string()
-        .min(6)
         .when('oldPassword', (oldPassword, field) =>
-          oldPassword ? field.required() : field
+          oldPassword ? field.required('Infome a nova senha') : field
+        )
+        .when('oldPassword', (oldPassword, field) =>
+          oldPassword ? field.min(6, 'No mínimo 6 caractéres') : field
         ),
       confirmPassword: Yup.string().when('password', (password, field) =>
-        password ? field.required().oneOf([Yup.ref('password')]) : field
+        password
+          ? field
+              .required('Confirme a nova senha')
+              .oneOf([Yup.ref('password')], 'Nova senha não confere')
+          : field
       ),
     });
+
+    const { email, oldPassword } = req.body;
+    const user = await User.findByPk(req.userId);
+
+    if (oldPassword && !(await user.checkPassword(oldPassword))) {
+      return res.status(401).json({ error: 'Senha não confere' });
+    }
 
     try {
       await schema.validate(req.body, { abortEarly: false });
@@ -60,10 +75,6 @@ class UserController {
         .json({ error: `Falha na validação\n${error.join('\n')}` });
     }
 
-    const { email, oldPassword } = req.body;
-
-    const user = await User.findByPk(req.userId);
-
     if (email !== user.email) {
       const userExists = await User.findOne({
         where: { email },
@@ -73,10 +84,6 @@ class UserController {
           error: 'Usuário já cadastrado',
         });
       }
-    }
-
-    if (oldPassword && !(await user.checkPassword(oldPassword))) {
-      return res.status(401).json({ error: 'Senha não confere' });
     }
 
     const { id, name, provider } = await user.update(req.body);

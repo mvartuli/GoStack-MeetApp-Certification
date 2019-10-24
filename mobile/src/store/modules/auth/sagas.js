@@ -25,7 +25,7 @@ export function* signIn({payload}) {
 
 export function* signUp({payload}) {
   try {
-    const {name, email, password} = payload;
+    const {name, email, password, navigation} = payload;
 
     yield call(api.post, 'users', {
       name,
@@ -33,6 +33,8 @@ export function* signUp({payload}) {
       password,
       provider: true,
     });
+    Alert.alert('Sucesso!', 'Conta criada.');
+    navigation.navigate('SignIn');
   } catch (err) {
     Alert.alert('Erro...', err.response.data.error);
     yield put(signFailure());

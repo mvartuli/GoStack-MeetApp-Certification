@@ -91,29 +91,18 @@ export default function Dashboard({navigation}) {
   }
 
   function handleEndReached() {
-    console.tron.log(meetups.length);
-    // if (meetups.length > 0) {
-    //   const nextPage = Math.ceil(meetups.length / 10) + 1;
-    //   console.tron.log(nextPage);
-    //   setPage(nextPage);
-    // }
     if (meetups.length >= 10) {
       setPage(page + 1);
     }
   }
 
-  console.tron.log(meetups);
-
   return (
     <Background>
       <NavigationEvents
-        onWillFocus={payload => {
-          console.tron.log('will focus', payload);
+        onWillFocus={() => {
           if (page > 1) {
-            console.tron.log('will focus set page to 1');
             setPage(1);
           } else {
-            console.tron.log('will focus set needtoload');
             // change the value just to fire the effect
             setNeedToLoad(!needToLoad);
           }

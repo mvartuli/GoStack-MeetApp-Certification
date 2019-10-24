@@ -21,7 +21,9 @@ const schema = Yup.object().shape({
     ),
   confirmPassword: Yup.string().when('password', (password, field) =>
     password
-      ? field.required('Confirme a nova senha').oneOf([Yup.ref('password')])
+      ? field
+          .required('Confirme a nova senha')
+          .oneOf([Yup.ref('password')], 'Nova senha não confere')
       : field
   ),
 });
